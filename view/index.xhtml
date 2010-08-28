@@ -16,21 +16,39 @@
         <script type="text/javascript" language="javascript">
             $(function() {
                 $.ft.buildLayout();
-                $('#panelProject').fileTree({ root: '/', script: '/api/files/' }, function(file) {
+                $('#panelProject').fileTree({ root: '/', script: '/api/filetree/' }, function(file) {
                     alert(file);
                 });
                 $('#btnNewProject').click(function() {
+                    uki('#ppNewProject')[0].toggle();
+                });
+                uki('#btnGitClone').click(function() {
                     $.ajax({
                         url: '/api/git/clone/',
                         type: 'post',
-                        data: {url: 'http://github.com/voloko/uki.git', name: 'uki'},
+                        data: {url: uki('#inputProjectUrl').value(), name: uki('#inputProjectName').value()},
                         success: function(data, status) {
-                            console || console.log(data);
-                        },
-                        error: function(xhr, status) {
-                    
+                            log(data);
                         }
                     });
+                });
+
+                function log(data) {
+                    $('#panelConsole').append('<p>' + data + '</p><br />');
+                }
+                
+                $.ajax({
+                    url: '/api/message/',
+                    stream: true,
+                    type: 'get',
+                    success: function(data, status) {
+                        log(data);
+                    }
+                });
+                $.ajax({
+                    ajaxError: function(xhr, status) {
+                        log("error: " + status);
+                    }
                 });
             });
         </script>
