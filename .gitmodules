@@ -1,0 +1,3 @@
+[submodule "lib/genji"]
+	path = lib/genji
+	url = git://github.com/zir/genji.git
