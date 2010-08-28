@@ -10,3 +10,6 @@
 [submodule "lib/nun"]
 	path = lib/nun
 	url = git://github.com/akaspin/nun.git
+[submodule "lib/Socket.IO-node"]
+	path = lib/Socket.IO-node
+	url = git://github.com/LearnBoost/Socket.IO-node.git

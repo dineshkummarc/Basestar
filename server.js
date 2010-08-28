@@ -2,12 +2,13 @@ var Path = require('path');
 
 // basic settings
 var settings = {
-    libPath: ["/lib/genji/lib", "/lib", "/lib/node-git/lib"]
+    libPath: ["/lib/genji/lib", "/lib", "/lib/node-git/lib", "/lib/Socket.IO-node/lib"]
     ,staticUrl: 'http://fewtter.no.de/static/'
     ,env: {type: 'production', root: __dirname, level: 1}
     ,servers: [
         {host: '8.19.40.199', port: 80}
     ]
+    ,workspace: "./workspace"
     ,middlewares: [
         {name:'response-time'},
         {name: 'error-handler'},
@@ -31,6 +32,8 @@ try {
 settings.libPath.forEach(function(path) {
     require.paths.unshift(Path.join(__dirname, path));
 });
+
+var io = require("socket.io");
 
 // load `genji` and start server
 var genji = require("genji");

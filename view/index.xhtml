@@ -6,15 +6,32 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>Fewtter - node online development environment</title>
         <style>body, html { overflow: hidden; margin: 0; padding: 0; }</style>
-        
+        <link href="{{staticUrl}}css/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
     </head>
     <body>
         <script type="text/javascript" src="{{staticUrl}}js/jquery-1.4.2.min.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/uki.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/layout.js" language="javascript"></script>
+        <script type="text/javascript" src="{{staticUrl}}js/jqueryFileTree.js" language="javascript"></script>
         <script type="text/javascript" language="javascript">
             $(function() {
                 $.ft.buildLayout();
+                $('#panelProject').fileTree({ root: '/', script: '/api/files/' }, function(file) {
+                    alert(file);
+                });
+                $('#btnNewProject').click(function() {
+                    $.ajax({
+                        url: '/api/git/clone/',
+                        type: 'post',
+                        data: {url: 'http://github.com/voloko/uki.git', name: 'uki'},
+                        success: function(data, status) {
+                            console.log(data);
+                        },
+                        error: function(xhr, status) {
+                    
+                        }
+                    });
+                });
             });
         </script>
     </body>
