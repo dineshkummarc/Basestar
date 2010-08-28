@@ -2,7 +2,7 @@ var Path = require('path');
 
 // basic settings
 var settings = {
-    libPath: ["/lib/genji/lib"]
+    libPath: ["/lib/genji/lib", "/lib", "/lib/node-git/lib"]
     ,staticUrl: 'http://fewtter.no.de/static/'
     ,env: {type: 'production', root: __dirname, level: 1}
     ,servers: [

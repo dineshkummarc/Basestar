@@ -1,3 +1,12 @@
 [submodule "lib/genji"]
 	path = lib/genji
 	url = git://github.com/zir/genji.git
+[submodule "lib/uki"]
+	path = lib/uki
+	url = http://github.com/voloko/uki.git
+[submodule "lib/node-git"]
+	path = lib/node-git
+	url = git://github.com/creationix/node-git.git
+[submodule "lib/nun"]
+	path = lib/nun
+	url = git://github.com/akaspin/nun.git
