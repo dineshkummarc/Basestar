@@ -1,14 +1,21 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>Fewtter - node online development environment</title>
-        <script type="text/javascript" src="{{staticUrl}}/js/uki.js" language="javascript"></script>
+        <style>body, html { overflow: hidden; margin: 0; padding: 0; }</style>
+        
     </head>
     <body>
-        <p>
-            TODO write content
-        </p>
+        <script type="text/javascript" src="{{staticUrl}}js/jquery-1.4.2.min.js" language="javascript"></script>
+        <script type="text/javascript" src="{{staticUrl}}js/uki.js" language="javascript"></script>
+        <script type="text/javascript" src="{{staticUrl}}js/layout.js" language="javascript"></script>
+        <script type="text/javascript" language="javascript">
+            $(function() {
+                $.ft.buildLayout();
+            });
+        </script>
     </body>
 </html>
