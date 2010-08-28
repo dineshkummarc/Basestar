@@ -10,7 +10,9 @@ viewRoot = Path.join(__dirname, "/view"),
 nun = require("nun"),
 chain = genji.pattern.control.chain,
 workspace = Path.join(__dirname, genji.settings.workspace),
-parseQuery = require("querystring").parse;
+parseQuery = require("querystring").parse,
+EventEmitter = require("events").EventEmitter
+emitter = new EventEmitter;
 
 /* http endpoint */
 
@@ -23,7 +25,7 @@ function index(handler) {
     })
 }
 
-function files(handler) {
+function filetree(handler) {
     handler.on('end', function(data) {
         var dir = parseQuery(data).dir;
         if (dir) {
@@ -87,13 +89,30 @@ function staticFile(handler, filepath) {
 }
 
 /* Restful json api */
+
 function gitClone(handler) {
     handler.on('end', function (data) {
         var params = parseQuery(data);
-        _gitClone(params.url, params.name, function(stdout, stderr) {
-            handler.sendHTML([stdout, stderr].join("\n"));
-        });
+        if (!params.url || !params.name) {
+            handler.send("Your must provide both url and name. Your input:\n" + JSON.stringify(params));
+        } else {
+            handler.sendHeaders(200, {'Content-Type': 'text/plain'});
+            _gitClone(params.url, params.name, function(stdout, stderr) {
+                if (stdout || stderr) {
+                    handler.response.write(stdout || stderr + "<br />");
+                } else {
+                    handler.finish();
+                }
+            });
+        }
     });
+}
+
+function message(handler) {
+    handler.sendHeaders(200, {'Content-Type': 'text/plain'});
+    setTimeout(function() {
+        handler.finish(new Date + '');
+    }, 1000);
 }
 
 /* private functions */
@@ -113,23 +132,36 @@ function _render(path, context, callback) {
     });
 }
 
-var exec  = require('child_process').exec;
-var git = genji.settings.git;
+var exec  = require('child_process').exec,
+spawn = require('child_process').spawn;
+var gitExec = genji.settings.git;
+
+function _gitCommand(cmd, callback) {
+    var git = spawn(gitExec, cmd);
+
+    git.stdout.on('data', function (data) {
+        callback("stdout: " + data);
+    });
+
+    git.stderr.on('data', function (data) {
+        callback(null, "stderr: " + data);
+    });
+
+    git.on('exit', function (code) {
+        callback();
+        console.log('child process exited with code ' + code);
+    });
+}
 
 function _gitClone(url, name, callback) {
-    var dir = Path.join(workspace, name);
-    var cmd = [git, "clone", "--recursive", url, dir].join(" ");
-    exec(cmd, function (err, stdout, stderr) {
-        callback(stdout, stderr);
-        if (err !== null) {
-            console.log('exec error: ' + err);
-        }
-    });
+   var dir = Path.join(workspace, name);
+   _gitCommand(["clone", "--recursive", url, dir], callback);
 }
 
 module.exports = [
     ["^/$", index, "get"],
-    ["^/api/git/clone/$", gitClone, "post"],
-    ["^/api/files/$", files, "post"],
+    ["^/api/git/clone/$", gitClone , "post"],
+    ["^/api/filetree/$", filetree, "post"],
+    ["^/api/message/$", message, "get"],
     [FileHandler, "^/static/(.*)$", staticFile, "get"]
 ];
