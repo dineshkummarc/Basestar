@@ -99,7 +99,7 @@ function gitClone(handler) {
             handler.sendHeaders(200, {'Content-Type': 'text/plain'});
             _gitClone(params.url, params.name, function(stdout, stderr) {
                 if (stdout || stderr) {
-                    handler.response.write(stdout || stderr + "<br />");
+                    handler.response.write((stdout || stderr) + "<br />");
                 } else {
                     handler.finish();
                 }

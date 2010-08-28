@@ -34,7 +34,7 @@
                 });
 
                 function log(data) {
-                    $('#panelConsole').append('<p>' + data + '</p><br />');
+                    $('#panelConsole').prepend('<p>' + data + '</p><br />');
                 }
                 
                 $.ajax({

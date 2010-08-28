@@ -90,10 +90,8 @@
                         view: 'Box',
                         rect: '0 0 700 700',
                         anchors: 'left top right bottom',
-                        vertical: true,
-                        handlePosition: 600,
                         childViews: [_panel('panelConsole', 'Console', 
-                            {rect:'0 600 300 200', labelRect: '698 24', containerRect: '1 25 698 120'})]
+                            {rect:'0 600 300 100', labelRect: '698 24', containerRect: '0 25 698 120'})]
                     }]
                 }]
             }).attachTo( window, '1000 600');
