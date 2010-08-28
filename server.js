@@ -8,6 +8,7 @@ var settings = {
     ,servers: [
         {host: '8.19.40.199', port: 80}
     ]
+    ,git: '/opt/local/bin/git'
     ,workspace: "./workspace"
     ,middlewares: [
         {name:'response-time'},

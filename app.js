@@ -114,11 +114,11 @@ function _render(path, context, callback) {
 }
 
 var exec  = require('child_process').exec;
-var spawn  = require('child_process').spawn;
+var git = genji.settings.git;
 
 function _gitClone(url, name, callback) {
     var dir = Path.join(workspace, name);
-    var cmd = ["git", "clone", "--recursive", url, dir].join(" ");
+    var cmd = [git, "clone", "--recursive", url, dir].join(" ");
     exec(cmd, function (err, stdout, stderr) {
         callback(stdout, stderr);
         if (err !== null) {
