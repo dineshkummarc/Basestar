@@ -10,14 +10,17 @@
             childViews: [{
                 id: 'btnNewProject',
                 view: 'Button',
-                rect: '800 16 100 24',
+                rect: '700 16 100 24',
                 anchors: 'top right',
                 text: '+ New project'
+            }, {
+                id: 'btnVote',
+                view: 'Box', src:'http://nodeknockout.com/images/voteko.png',
+                anchors: 'top right',
+                rect: '860 -3 126 63'
             }]
         }
     };
-
-
 
     function _panel(id, label, options) {
         options = options || {};
@@ -166,10 +169,6 @@
                     {id:'btnGitClone', view: 'Button', rect: '160 86 70 24', anchors: 'right bottom', text: "Clone"},
                 ]
             }).hide();
-        },
-
-        dialog: function (id, title) {
-            uki(_panel(id, title)).attachTo(window, '200 200 1000 600');
         }
     }
 })(jQuery);

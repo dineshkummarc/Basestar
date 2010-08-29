@@ -12,65 +12,13 @@
         <script type="text/javascript" src="{{staticUrl}}js/jquery-1.4.2.min.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/uki.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/layout.js" language="javascript"></script>
+        <script type="text/javascript" src="{{staticUrl}}js/ft.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/jqueryFileTree.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/codemirror/js/codemirror.js" language="javascript"></script>
         <script type="text/javascript" src="{{staticUrl}}js/codemirror/js/mirrorframe.js" language="javascript"></script>
         <script type="text/javascript" language="javascript">
             $(function() {
-                $.ft.buildLayout();
-                $('#panelProject').fileTree({ root: '/', script: '/api/filetree/' }, function(file) {
-                    $.ajax({
-                        url: '/api/getCode/-' + file,
-                        type: 'get',
-                        success: function (data) {
-                            editor.setCode(data.code);
-                        }
-                    });
-                });
-                $('#btnNewProject').click(function() {
-                    uki('#ppNewProject')[0].toggle();
-                });
-                uki('#btnGitClone').click(function() {
-                    $.ajax({
-                        url: '/api/git/clone/',
-                        type: 'post',
-                        data: {url: uki('#inputProjectUrl').value(), name: uki('#inputProjectName').value()},
-                        success: function(data, status) {
-                            log(data);
-                        }
-                    });
-                });
-
-                function log(data) {
-                    $('#panelConsole').prepend('<p>' + data + '</p>');
-                }
-                
-                $.ajax({
-                    url: '/api/message/',
-                    stream: true,
-                    type: 'get',
-                    success: function(data, status) {
-                        log(data);
-                    }
-                });
-                $.ajax({
-                    ajaxError: function(xhr, status) {
-                        log("error: " + status);
-                    }
-                });
-
-                // Code editor
-                var editorWrapper = $('#codeEditor');
-                var editor = new CodeMirror(editorWrapper[0], {
-                    height: "98%",
-                    width: '99%',
-                    //content: data,
-                    parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-                    stylesheet: "static/js/codemirror/css/jscolors.css",
-                    path: "static/js/codemirror/js/",
-                    autoMatchParens: true
-                });
-                
+                $.ft.init();
             });
         </script>
     </body>
