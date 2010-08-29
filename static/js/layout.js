@@ -73,8 +73,8 @@
         //var rect =
         return {
             view: 'Box',
-            rect: options.rect || '300 400',
-            anchors: options.anchors || 'top left right bottom',
+            rect: '0 0 700 500',
+            anchors: 'top left right bottom',
 //            style: {border: '1px solid #00ff00'},
             childViews: [{
                 view: 'Box',
@@ -85,6 +85,7 @@
                         width: '100%'
                 },
                 childViews: [{
+                    id: id+'Label',
                     view: 'Label',
                     rect: '0 0 200 24',
                     anchors: 'left top right bottom',
@@ -99,16 +100,23 @@
             {
                 id: id,
                 view: 'Box',
-                rect: options.rect ? (function(rect) {
-                    rect = rect.split(' ');
-                    return [0, 25, rect[2], rect[3] - 25].join(' ');
-                })(options.rect): '0 25 300 375',
+                rect: '0 0 700 500',
                 anchors: 'top left right bottom',
                 style: {
-//                    border: '1px dotted #ff0000',
-                        width: '100%',
-                    overflow: 'auto'
+                        width: '100%'
                 }
+            },
+            {
+                view:'Box',
+//                background: 'theme(panel)',
+                rect: '392 450 300 48',
+                anchors: 'bottom right',
+//                style: {border: '1px solid #00ff00'},
+                childViews: [
+                    {id:'btnSave', view: 'Button', rect: '110 22 60 24', anchors: 'left top', text: 'Save'},
+                    {id:'btnRun', view: 'Button', rect: '180 22 100 24', anchors: 'left top', text: 'Run with node'},
+                ]
+
             }
             ]
         };
@@ -153,7 +161,7 @@
                         vertical: true,
                         handlePosition: 500,
                         minSize: "400 300",
-                        topPane: _editor('codeEditor', 'Editor', {rect:'0 0 700 500'}),
+                        topPane: _editor('codeEditor', 'Editor'),
                         bottomPane: _panel('panelConsole', 'Console',
                             {rect:'0 0 700 200'})
                     }]
@@ -169,6 +177,18 @@
                     {id:'btnGitClone', view: 'Button', rect: '160 86 70 24', anchors: 'right bottom', text: "Clone"},
                 ]
             }).hide();
+        },
+        createEditorWrapper: function(id) {
+           return uki({
+               id: id,
+               view: 'Box',
+               rect: '0 25 700 470',
+               anchors: 'top left right bottom',
+                style: {
+                    width: '100%',
+                    overflow: 'auto'
+                }
+           });
         }
     }
 })(jQuery);

@@ -9,7 +9,8 @@ var settings = {
         {host: '8.19.40.199', port: 80}
     ]
     ,git: '/opt/local/bin/git'
-    ,workspace: "./workspace"
+    ,node: '/usr/nodejs/latest/bin/node'
+    ,workspace: "/home/node/workspace"
     ,middlewares: [
         {name:'response-time'},
         {name: 'error-handler'},

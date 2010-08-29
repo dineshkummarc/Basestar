@@ -9,7 +9,7 @@ staticRoot = Path.join(__dirname, "/static"),
 viewRoot = Path.join(__dirname, "/view"),
 nun = require("nun"),
 chain = genji.pattern.control.chain,
-workspace = Path.join(__dirname, genji.settings.workspace),
+workspace = genji.settings.workspace,
 parseQuery = require("querystring").parse,
 EventEmitter = require("events").EventEmitter
 emitter = new EventEmitter;
@@ -144,29 +144,62 @@ function _render(path, context, callback) {
 }
 
 var exec  = require('child_process').exec,
-spawn = require('child_process').spawn;
-var gitExec = genji.settings.git;
+spawn = require('child_process').spawn,
+nodeExec = genji.settings.node,
+gitExec = genji.settings.git;
 
-function _gitCommand(cmd, callback) {
-    var git = spawn(gitExec, cmd);
-
-    git.stdout.on('data', function (data) {
+function _exec(cmd, options, callback) {
+    var exec = spawn(cmd, options);
+    exec.stdout.on('data', function (data) {
         callback('' + data);
     });
 
-    git.stderr.on('data', function (data) {
+    exec.stderr.on('data', function (data) {
         callback(null, '' + data);
     });
 
-    git.on('exit', function (code) {
+    exec.on('exit', function (code) {
         callback(null, null, code);
-        console.log('child process `git` exited with code ' + code);
+        console.log(cmd + ': child process exited with code ' + code);
     });
+}
+
+function _gitCommand(options, callback) {
+    _exec(gitExec, options, callback);
 }
 
 function _gitClone(url, name, callback) {
    var dir = Path.join(workspace, name);
    _gitCommand(["clone", "--recursive", url, dir], callback);
+}
+
+function _saveFile(client, data) {
+    var path = Path.join(workspace, data.filename);
+    fs.writeFile(path, data.content, 'utf8', function(err) {
+        if (err) {
+            client.send({type:'msg', data:['Error, cannot save file: ', data.filename]});
+        } else {
+            client.send({type:'msg', data:[data.filename + ' saved!']});
+            client.pub({type:'msg', data:['Someone saved file ' + data.filename]});
+        }
+    });
+}
+
+function _node(client, data) {
+    if (!data.filename) {
+        client.send({type:'msg', data: ["Your must provide the script name, try open a file first."]});
+    }
+    var path = Path.join(workspace, data.filename);
+    var options = data.options || [];
+    options.push(path);
+   _exec(nodeExec, options, function(stdout, stderr, code) {
+       var msg = stdout || stderr;
+       msg && client.send({type: 'msg', data: [msg]});
+       if (code) {
+          client.send({type: 'msg', data: ["script exited with: " + code]});
+          client.pub({type: 'msg', data: ['Someone just run script:', data.filename]});
+       }
+   });
 }
 
 emitter.on("message", function(client, msg) {
@@ -183,12 +216,21 @@ emitter.on("cmd", function(client, data) {
                     // tell client to refresh project browser
                     var m = ["User " + client.sessionId, "cloned", data.url,"as project",data.name];
                     client.pub({type: 'msg', data:[m.join(" ")]})
+                    // for others
                     client.pub({type:'event', name: 'newProjectCreated', data:[]});
+                    // for youself
+                    client.send({type:'event', name: 'newProjectCreated', data:[]});
                 }
             });
         } else {
-            client.send({type:'msg', data: ["Your must provide both url and name. Your input:\n"]})
+            client.send({type:'msg', data: ["Your must provide both url and name."]})
         }
+    }
+    if (data.cmd == 'saveFile') {
+        _saveFile(client, data);
+    }
+    if (data.cmd == 'node') {
+        _node(client, data);
     }
 });
 
