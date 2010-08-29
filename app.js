@@ -26,6 +26,8 @@ function index(handler) {
 }
 
 function filetree(handler) {
+    if (genji.emitter)
+        genji.emitter.emit('message', 'file tree called');
     handler.on('end', function(data) {
         var dir = parseQuery(data).dir;
         if (dir) {
@@ -149,16 +151,16 @@ function _gitCommand(cmd, callback) {
     var git = spawn(gitExec, cmd);
 
     git.stdout.on('data', function (data) {
-        callback("stdout: " + data);
+        callback('' + data);
     });
 
     git.stderr.on('data', function (data) {
-        callback(null, "stderr: " + data);
+        callback(null, '' + data);
     });
 
     git.on('exit', function (code) {
-        callback();
-        console.log('child process exited with code ' + code);
+        callback(null, null, code);
+        console.log('child process `git` exited with code ' + code);
     });
 }
 
@@ -166,6 +168,62 @@ function _gitClone(url, name, callback) {
    var dir = Path.join(workspace, name);
    _gitCommand(["clone", "--recursive", url, dir], callback);
 }
+
+emitter.on("message", function(client, msg) {
+    this.emit(msg.type, client, msg.data);
+});
+
+emitter.on("cmd", function(client, data) {
+    if (data.cmd == 'gitClone') {
+        if (data.url && data.name) {
+            _gitClone(data.url, data.name, function(stdout, stderr, code) {
+                var msg = stdout || stderr;
+                msg && client.send({type: 'msg', data: [msg]});
+                if (code === 0) {//cloned
+                    // tell client to refresh project browser
+                    var m = ["User " + client.sessionId, "cloned", data.url,"as project",data.name];
+                    client.pub({type: 'msg', data:[m.join(" ")]})
+                    client.send({type:'event', name: 'newProjectCreated', data:[]});
+                }
+            });
+        } else {
+            client.send({type:'msg', data: ["Your must provide both url and name. Your input:\n"]})
+        }
+    }
+});
+
+// message hub
+process.nextTick(function() {
+if ('io' in genji) {
+    var buffer = [];
+    genji.io.on('connection', function(client){
+        // record history for broadcast
+        var broadcast = function(msg) {
+            if (msg.type == 'msg') {
+                msg.data.push(new Date+'');
+                buffer.push(msg);
+            }
+            if (buffer.length > 30) buffer.shift();
+            client.broadcast(msg);
+        }
+        client.pub = broadcast;
+        if (buffer.length > 0) {
+            buffer.forEach(function(msg) {
+                client.send(msg);
+            })
+        }
+        broadcast({type: 'msg', data: [client.sessionId + ' connected']});
+        client.on('message', function(msg) {
+            emitter.emit("message", client, msg);
+        });
+
+        client.on('disconnect', function(){
+            broadcast({type: 'msg', data: [client.sessionId + ' disconnected']});
+        });
+    });
+}
+});
+
 
 module.exports = [
     ["^/$", index, "get"],
