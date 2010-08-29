@@ -18,6 +18,14 @@
                 view: 'Box', src:'http://nodeknockout.com/images/voteko.png',
                 anchors: 'top right',
                 rect: '860 -3 126 63'
+            },
+            {
+                view: 'Label', anchors: 'left top right', rect: '30 10 200 40', text: 'Nodejs in-browser development environment',
+                style: {
+                    fontSize: '30px',
+                    color: '#000',
+                    textShadow: '-1px -1px #dddddd'
+                }
             }]
         }
     };
