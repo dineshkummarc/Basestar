@@ -115,6 +115,15 @@ function message(handler) {
     }, 1000);
 }
 
+function getCode(handler, filename) {
+    if (filename) {
+        fs.readFile(Path.join(workspace, filename), 'utf8', function(err, data) {
+            if (err) throw err;
+            handler.sendJSON({code: data.length > 0 ? data : ''});
+        });
+    }
+}
+
 /* private functions */
 
 // render mustache template by nun
@@ -163,5 +172,6 @@ module.exports = [
     ["^/api/git/clone/$", gitClone , "post"],
     ["^/api/filetree/$", filetree, "post"],
     ["^/api/message/$", message, "get"],
+    ["^/api/getCode/-(.*)$", getCode, "get"],
     [FileHandler, "^/static/(.*)$", staticFile, "get"]
 ];

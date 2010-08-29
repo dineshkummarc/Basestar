@@ -21,15 +21,20 @@
 
     function _panel(id, label, options) {
         options = options || {};
+        //var rect =
         return {
             view: 'Box',
             rect: options.rect || '300 400',
-            anchors: 'top left right bottom',
+            anchors: options.anchors || 'top left right bottom',
+//            style: {border: '1px solid #00ff00'},
             childViews: [{   
                 view: 'Box',
                 background: 'theme(panel)',
-                rect: options.labelRect || '300 24',
-                anchors: 'top left right',
+                rect: '300 24',
+                anchors: 'left top right',
+                style: {
+                        width: '100%'
+                },
                 childViews: [{
                     view: 'Label',
                     rect: '0 0 200 24',
@@ -45,10 +50,60 @@
             {
                 id: id,
                 view: 'Box',
-                rect: options.containerRect || '0 25 300 375',
+                rect: options.rect ? (function(rect) {
+                    rect = rect.split(' ');
+                    return [0, 25, rect[2], rect[3] - 25].join(' ');
+                })(options.rect): '0 25 300 375',
                 anchors: 'top left right bottom',
                 style: {
-                    border: '1px solid #ccc',
+//                    border: '1px dotted #ff0000',
+                    width: '100%',
+                    overflow: 'auto'
+                }
+            }
+            ]
+        };
+    }
+
+    function _editor(id, label, options) {
+       options = options || {};
+        //var rect =
+        return {
+            view: 'Box',
+            rect: options.rect || '300 400',
+            anchors: options.anchors || 'top left right bottom',
+//            style: {border: '1px solid #00ff00'},
+            childViews: [{
+                view: 'Box',
+                background: 'theme(panel)',
+                rect: '300 24',
+                anchors: 'left top right',
+                style: {
+                        width: '100%'
+                },
+                childViews: [{
+                    view: 'Label',
+                    rect: '0 0 200 24',
+                    anchors: 'left top right bottom',
+                    text: label,
+                    style: {
+                        textAlign: 'center',
+                        width: '100%',
+                        fontWeight: 'bold'
+                    }
+                }]
+            },
+            {
+                id: id,
+                view: 'Box',
+                rect: options.rect ? (function(rect) {
+                    rect = rect.split(' ');
+                    return [0, 25, rect[2], rect[3] - 25].join(' ');
+                })(options.rect): '0 25 300 375',
+                anchors: 'top left right bottom',
+                style: {
+//                    border: '1px dotted #ff0000',
+                        width: '100%',
                     overflow: 'auto'
                 }
             }
@@ -81,17 +136,23 @@
                         rect: '300 600',
                         anchors: 'left top right bottom',
                         handlePosition: 400,
+                        minSize: "200 300",
                         vertical: true,
                         topPane: _panel('panelProject', 'Project browser'),
                         bottomPane: _panel('panelNavigator', 'Code Navigator')
                     }],
                     // code editor and info window like console, monitor etc.
                     rightChildViews: [{
-                        view: 'Box',
-                        rect: '0 0 700 700',
+                        view: 'VSplitPane',
+                        rect: '700 700',
                         anchors: 'left top right bottom',
-                        childViews: [_panel('panelConsole', 'Console', 
-                            {rect:'0 600 300 100', labelRect: '698 24', containerRect: '0 25 698 120'})]
+//                        style: {border: '1px dashed blue'},
+                        vertical: true,
+                        handlePosition: 500,
+                        minSize: "400 300",
+                        topPane: _editor('codeEditor', 'Editor', {rect:'0 0 700 500'}),
+                        bottomPane: _panel('panelConsole', 'Console',
+                            {rect:'0 0 700 200'})
                     }]
                 }]
             }).attachTo( window, '1000 600');
