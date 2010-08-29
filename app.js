@@ -183,7 +183,7 @@ emitter.on("cmd", function(client, data) {
                     // tell client to refresh project browser
                     var m = ["User " + client.sessionId, "cloned", data.url,"as project",data.name];
                     client.pub({type: 'msg', data:[m.join(" ")]})
-                    client.send({type:'event', name: 'newProjectCreated', data:[]});
+                    client.pub({type:'event', name: 'newProjectCreated', data:[]});
                 }
             });
         } else {
