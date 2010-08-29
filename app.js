@@ -188,16 +188,17 @@ function _saveFile(client, data) {
 function _node(client, data) {
     if (!data.filename) {
         client.send({type:'msg', data: ["Your must provide the script name, try open a file first."]});
+        return;
     }
+    client.pub({type: 'msg', data: ['Someone just run script: ' + data.filename]});
     var path = Path.join(workspace, data.filename);
     var options = data.options || [];
     options.push(path);
    _exec(nodeExec, options, function(stdout, stderr, code) {
        var msg = stdout || stderr;
        msg && client.send({type: 'msg', data: [msg]});
-       if (code) {
+       if (code !== undefined) {
           client.send({type: 'msg', data: ["script exited with: " + code]});
-          client.pub({type: 'msg', data: ['Someone just run script:', data.filename]});
        }
    });
 }
