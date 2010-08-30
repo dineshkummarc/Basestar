@@ -192,16 +192,22 @@ function _node(client, data) {
         return;
     }
     client.pub({type: 'msg', data: ['Someone just run script: ' + data.filename]});
+    client.send({type: 'msg', data: ["Your process can running for at most 120 seconds."]});
     var path = Path.join(workspace, data.filename);
-    var options = data.options || [];
+    var options = data.options || [], id;
     options.push(path);
     var child = _exec(nodeExec, options, function(stdout, stderr, code) {
        var msg = stdout || stderr;
        msg && client.send({type: 'msg', data: [msg]});
        if (code !== undefined) {
           client.send({type: 'msg', data: ["script exited with: " + code]});
+          clearTimeout(id);
        }
    });
+   id = setTimeout(function() {
+       child.kill('SIGKILL');
+   }, 120000);
+   
 }
 
 emitter.on("message", function(client, msg) {
